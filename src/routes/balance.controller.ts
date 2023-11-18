@@ -14,14 +14,11 @@ balanceRouter.post('/change', async (req, res) => {
 			{
 				balance: sequelize.literal(`balance+${amount}`)
 			},
-			{ where: { id: userId }, returning: ['balance'], transaction }
+			{ where: { id: userId }, returning: ['balance'], individualHooks: true,  transaction }
 		);
 
 		if(update.length===0)
 		throw 'User not found!';
-
-		if(update[0].balance<0)
-		throw 'Balance must be >=0!';
 
 		await transaction.commit();
 		res.status(200).send(`Balance: ${update[0].balance}`);
